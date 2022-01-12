@@ -1,0 +1,67 @@
+passwd:
+  users:
+  - name: core
+    ssh_authorized_keys:
+    - "%%SSH_PUBKEY%%"
+systemd:
+  units:
+  - name: "nomad-binaries.service"
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Pull Nomad binary
+      After=network-online.target
+      Wants=network-online.target
+      ConditionPathExists=!/opt/bin/nomad
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=docker create --name nomad-binaries quay.io/travier/nomad
+      ExecStart=docker cp nomad-binaries:/nomad /opt/bin/nomad
+      ExecStart=docker rm -f nomad-binaries
+      ExecStart=docker rmi quay.io/travier/nomad
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: "nomad-agent.service"
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Nomad
+      Documentation=https://www.nomadproject.io/docs/
+      After=network-online.target nomad-binaries.service
+      Wants=network-online.target
+      Requires=nomad-binaries.service
+
+      # When using Nomad with Consul it is not necessary to start Consul first. These
+      # lines start Consul before Nomad as an optimization to avoid Nomad logging
+      # that Consul is unavailable at startup.
+      #Wants=consul.service
+      #After=consul.service
+
+      [Service]
+      ExecReload=/bin/kill -HUP $MAINPID
+      ExecStart=/opt/bin/nomad agent -config /etc/nomad.d
+      KillMode=process
+      KillSignal=SIGINT
+      LimitNOFILE=65536
+      LimitNPROC=infinity
+      Restart=on-failure
+      RestartSec=2
+      TasksMax=infinity
+      OOMScoreAdjust=-1000
+
+      [Install]
+      WantedBy=multi-user.target
+storage:
+  directories:
+  - path: /etc/nomad.d
+    mode: 0700
+  - path: /var/lib/nomad
+    mode: 0711
+  files:
+  - path: /etc/nomad.d/common.hcl
+    contents:
+      local: common.hcl
+    mode: 0600

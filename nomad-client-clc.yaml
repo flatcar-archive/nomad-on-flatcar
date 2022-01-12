@@ -1,0 +1,8 @@
+  - path: /etc/hostname
+    contents:
+      inline: nomad-client-%%NUMBER%%
+    mode: 0600
+  - path: /etc/nomad.d/client.hcl
+    contents:
+      local: client.hcl
+    mode: 0600
