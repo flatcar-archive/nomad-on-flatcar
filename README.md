@@ -11,4 +11,10 @@ export RESOURCE_GROUP=resource-group-name
 export DATACENTER=datacenter-name
 export BOOTSTRAP_IP=10.0.0.4
 make
+
+# log in to azure
+az login
+
+# deploy on azure
+make deploy
 ```

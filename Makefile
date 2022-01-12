@@ -20,3 +20,6 @@ clients: common
 	sed 's|%%SSH_PUBKEY%%|${SSH_PUBKEY}|' nomad-common-clc.yaml | cat - nomad-client-clc.yaml | sed 's|%%NUMBER%%|1|' |  ct --files-dir config --strict --out-file client-1.ign
 	sed 's|%%SSH_PUBKEY%%|${SSH_PUBKEY}|' nomad-common-clc.yaml | cat - nomad-client-clc.yaml | sed 's|%%NUMBER%%|2|' |  ct --files-dir config --strict --out-file client-2.ign
 	sed 's|%%SSH_PUBKEY%%|${SSH_PUBKEY}|' nomad-common-clc.yaml | cat - nomad-client-clc.yaml | sed 's|%%NUMBER%%|3|' |  ct --files-dir config --strict --out-file client-3.ign
+
+deploy:
+	./azure-deploy.sh ${RESOURCE_GROUP}
