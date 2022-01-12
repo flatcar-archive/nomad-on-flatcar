@@ -16,6 +16,7 @@ systemd:
 
       [Service]
       Type=oneshot
+      Restart=on-failure
       RemainAfterExit=yes
       ExecStart=docker create --name nomad-binaries quay.io/travier/nomad
       ExecStart=docker cp nomad-binaries:/nomad /opt/bin/nomad
