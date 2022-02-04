@@ -4,7 +4,7 @@ set -xe
 
 RESOURCE_GROUP=${RESOURCE_GROUP:-iago-test-nomad}
 
-az group create --name ${RESOURCE_GROUP} --location westeurope
+az group create --name ${RESOURCE_GROUP} --location northeurope
 az network vnet create --resource-group ${RESOURCE_GROUP} --name nomad-vnet --subnet-name nomad-subnet
 az network public-ip create --resource-group ${RESOURCE_GROUP} --name nomad-publicIP
 az network nsg create --resource-group ${RESOURCE_GROUP} --name nomad-nsg
