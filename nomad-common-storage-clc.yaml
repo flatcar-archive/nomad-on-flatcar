@@ -1,0 +1,11 @@
+storage:
+  directories:
+  - path: /etc/nomad.d
+    mode: 0700
+  - path: /var/lib/nomad
+    mode: 0711
+  files:
+  - path: /etc/nomad.d/common.hcl
+    contents:
+      local: common.hcl
+    mode: 0600

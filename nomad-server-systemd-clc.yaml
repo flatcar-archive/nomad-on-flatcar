@@ -1,0 +1,32 @@
+  - name: "consul.service"
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Consul
+      Documentation=https://www.consul.io/docs
+      After=network-online.target
+      Wants=network-online.target
+      [Service]
+      ExecStartPre=-docker rm -f consul
+      ExecStartPre=docker run -d \
+        --name=consul \
+        --restart=unless-stopped \
+        --network=host \
+        consul \
+        agent \
+        -server \
+        -retry-join=%%BOOTSTRAP_IP%% \
+        -node="nomad-server-%%NUMBER%%" \
+        -bootstrap-expect=3 \
+        -datacenter=%%DATACENTER%% \
+        -advertise '{{ GetInterfaceIP "eth0" }}'
+      ExecStart=docker logs -f consul
+      ExecStop=docker stop consul
+      ExecStopPost=docker rm consul
+      Restart=always
+      RestartSec=2
+      TasksMax=infinity
+      OOMScoreAdjust=-1000
+
+      [Install]
+      WantedBy=multi-user.target

@@ -38,8 +38,8 @@ systemd:
       # When using Nomad with Consul it is not necessary to start Consul first. These
       # lines start Consul before Nomad as an optimization to avoid Nomad logging
       # that Consul is unavailable at startup.
-      #Wants=consul.service
-      #After=consul.service
+      Wants=consul.service
+      After=consul.service
 
       [Service]
       ExecReload=/bin/kill -HUP $MAINPID
@@ -55,14 +55,3 @@ systemd:
 
       [Install]
       WantedBy=multi-user.target
-storage:
-  directories:
-  - path: /etc/nomad.d
-    mode: 0700
-  - path: /var/lib/nomad
-    mode: 0711
-  files:
-  - path: /etc/nomad.d/common.hcl
-    contents:
-      local: common.hcl
-    mode: 0600
