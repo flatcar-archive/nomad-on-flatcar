@@ -15,7 +15,7 @@
         consul \
         agent \
         -retry-join=%%BOOTSTRAP_IP%% \
-        -node="nomad-server-%%NUMBER%%" \
+        -node="nomad-client-%%NUMBER%%" \
         -datacenter=%%DATACENTER%% \
         -advertise '{{ GetInterfaceIP "eth0" }}'
       ExecStart=docker logs -f consul
