@@ -4,25 +4,19 @@
       [Unit]
       Description=Consul
       Documentation=https://www.consul.io/docs
-      After=network-online.target
+      After=network-online.target prepare-consul-binary.service
       Wants=network-online.target
+      Requires=prepare-consul-binary.service
       [Service]
-      ExecStartPre=-docker rm -f consul
-      ExecStartPre=docker run -d \
-        --name=consul \
-        --restart=unless-stopped \
-        --network=host \
-        consul \
+      ExecStart=/opt/bin/consul \
         agent \
         -server \
         -retry-join=%%BOOTSTRAP_IP%% \
         -node="nomad-server-%%NUMBER%%" \
         -bootstrap-expect=3 \
         -datacenter=%%DATACENTER%% \
-        -advertise '{{ GetInterfaceIP "eth0" }}'
-      ExecStart=docker logs -f consul
-      ExecStop=docker stop consul
-      ExecStopPost=docker rm consul
+        -advertise '{{ GetInterfaceIP "eth0" }}' \
+        -data-dir=/var/lib/consul
       Restart=always
       RestartSec=2
       TasksMax=infinity

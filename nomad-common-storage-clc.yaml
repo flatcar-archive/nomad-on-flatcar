@@ -5,6 +5,26 @@ storage:
   - path: /var/lib/nomad
     mode: 0711
   files:
+  - path: /opt/bin/nomad_1.2.6_linux_amd64.zip
+    filesystem: root
+    mode: 0644
+    contents:
+      remote:
+        url: https://releases.hashicorp.com/nomad/1.2.6/nomad_1.2.6_linux_amd64.zip
+        verification:
+          hash:
+            function: sha512
+            sum: c134198bd79b1e0c98d12262a7450cd0eee941f70118cfd196955f064073d312e395585a034d5ce32aa4c4763cb5a20a75d676407347f1ee515865f8d206cab5
+  - path: /opt/bin/consul_1.11.2_linux_amd64.zip
+    filesystem: root
+    mode: 0644
+    contents:
+      remote:
+        url: https://releases.hashicorp.com/consul/1.11.2/consul_1.11.2_linux_amd64.zip
+        verification:
+          hash:
+            function: sha512
+            sum: 074c984575c8c8bc694f83eac034765a40448418687af8a213a83450c96b36cffe4f1fcb839d5a7f595d33f9e96497d31b2a193178fa1e24e2166ec1de475650
   - path: /etc/nomad.d/common.hcl
     contents:
       local: common.hcl

@@ -5,23 +5,37 @@ passwd:
     - "%%SSH_PUBKEY%%"
 systemd:
   units:
-  - name: "nomad-binaries.service"
+  - name: "prepare-nomad-binary.service"
     enabled: true
     contents: |
       [Unit]
-      Description=Pull Nomad binary
-      After=network-online.target
-      Wants=network-online.target
+      Description=Unpack Nomad binary to /opt/bin
       ConditionPathExists=!/opt/bin/nomad
 
       [Service]
       Type=oneshot
       Restart=on-failure
       RemainAfterExit=yes
-      ExecStart=docker create --name nomad-binaries quay.io/travier/nomad
-      ExecStart=docker cp nomad-binaries:/nomad /opt/bin/nomad
-      ExecStart=docker rm -f nomad-binaries
-      ExecStart=docker rmi quay.io/travier/nomad
+      Environment=NOMAD_VERSION=1.2.6
+      ExecStart=/usr/bin/unzip "/opt/bin/nomad_${NOMAD_VERSION}_linux_amd64.zip" -d /opt/bin
+      ExecStart=/usr/bin/rm "/opt/bin/nomad_${NOMAD_VERSION}_linux_amd64.zip"
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: "prepare-consul-binary.service"
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Unpack Consul binary to /opt/bin
+      ConditionPathExists=!/opt/bin/consul
+
+      [Service]
+      Type=oneshot
+      Restart=on-failure
+      RemainAfterExit=yes
+      Environment=CONSUL_VERSION=1.11.2
+      ExecStart=/usr/bin/unzip "/opt/bin/consul_${CONSUL_VERSION}_linux_amd64.zip" -d /opt/bin
+      ExecStart=/usr/bin/rm "/opt/bin/consul_${CONSUL_VERSION}_linux_amd64.zip"
 
       [Install]
       WantedBy=multi-user.target
@@ -31,9 +45,9 @@ systemd:
       [Unit]
       Description=Nomad
       Documentation=https://www.nomadproject.io/docs/
-      After=network-online.target nomad-binaries.service
+      After=network-online.target prepare-nomad-binary.service
       Wants=network-online.target
-      Requires=nomad-binaries.service
+      Requires=prepare-nomad-binary.service
 
       # When using Nomad with Consul it is not necessary to start Consul first. These
       # lines start Consul before Nomad as an optimization to avoid Nomad logging
